@@ -1,0 +1,61 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: container-scanner
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: '100'
+        autoscaling.knative.dev/minScale: '1'
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      containers:
+      - image: gcr.io/PROJECT_ID/container-scanner:latest
+        ports:
+        - name: http1
+          containerPort: 8080
+        env:
+        - name: GCP_PROJECT_ID
+          value: "PROJECT_ID"
+        - name: ARTIFACT_REGISTRY_LOCATION
+          value: "us-central1"
+        - name: ARTIFACT_REGISTRY_REPOSITORY
+          value: "default"
+        - name: CONFLUENCE_URL
+          valueFrom:
+            secretKeyRef:
+              name: confluence-config
+              key: url
+        - name: CONFLUENCE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: confluence-config
+              key: username
+        - name: CONFLUENCE_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: confluence-config
+              key: api-token
+        - name: CONFLUENCE_SPACE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: confluence-config
+              key: space-key
+        - name: LOG_LEVEL
+          value: "INFO"
+        resources:
+          limits:
+            cpu: '2'
+            memory: '1Gi'
+          requests:
+            cpu: '1'
+            memory: '512Mi'
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 30
+      serviceAccountName: container-scanner-sa

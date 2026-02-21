@@ -1,0 +1,22 @@
+apiVersion: cloudscheduler.cnpg.io/v1beta1
+kind: CloudSchedulerJob
+metadata:
+  name: container-scanner-scheduled
+spec:
+  # Run daily at 2 AM
+  schedule: "0 2 * * *"
+  timeZone: "UTC"
+  httpTarget:
+    body:
+      jsonBody:
+        publish: true
+    headers:
+      Content-Type: "application/json"
+    uri: "https://container-scanner-<REGION>-<PROJECT_ID>.run.app/scan"
+    httpMethod: POST
+    oidcToken:
+      audience: "https://container-scanner-<REGION>-<PROJECT_ID>.run.app"
+      serviceAccountEmail: "container-scanner-sa@<PROJECT_ID>.iam.gserviceaccount.com"
+  description: "Daily container vulnerability scan and Confluence report"
+  retryConfig:
+    retryCount: 2
