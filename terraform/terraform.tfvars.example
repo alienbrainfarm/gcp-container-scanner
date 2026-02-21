@@ -1,0 +1,27 @@
+# Copy this file to terraform.tfvars and fill in the required values.
+# Do NOT commit terraform.tfvars to version control as it contains sensitive values.
+
+project_id = "your-gcp-project-id"
+region     = "us-central1"
+
+# Container image to deploy (built via Cloud Build or manually)
+image = "gcr.io/your-gcp-project-id/container-scanner:latest"
+
+# Artifact Registry settings
+artifact_registry_location   = "us-central1"
+artifact_registry_repository = "default"
+
+# Confluence credentials (stored in Secret Manager)
+confluence_url       = "https://your-domain.atlassian.net"
+confluence_username  = "your-email@example.com"
+confluence_api_token = "your-api-token"
+confluence_space_key = "YOUR_SPACE_KEY"
+
+# Optional overrides
+# scan_schedule             = "0 2 * * *"
+# log_level                 = "INFO"
+# cloud_run_min_instances   = 0
+# cloud_run_max_instances   = 10
+# cloud_run_memory          = "1Gi"
+# cloud_run_cpu             = "2"
+# cloud_run_timeout_seconds = 300
