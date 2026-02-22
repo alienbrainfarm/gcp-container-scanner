@@ -1,12 +1,8 @@
 """Application settings and configuration."""
 
 import os
-from typing import Optional
-from dotenv import load_dotenv
-from pydantic import BaseSettings, validator
-
-
-load_dotenv()
+from pydantic_settings import BaseSettings
+from pydantic import field_validator
 
 
 class Settings(BaseSettings):
@@ -36,6 +32,7 @@ class Settings(BaseSettings):
     # Scanner Configuration
     MAX_VULNERABILITY_SEVERITY: str = os.getenv("MAX_VULNERABILITY_SEVERITY", "HIGH")
     SCAN_BATCH_SIZE: int = int(os.getenv("SCAN_BATCH_SIZE", "10"))
+    TRIVY_PATH: str = "trivy"
     
     # Scheduling
     SCAN_SCHEDULE_CRON: str = os.getenv("SCAN_SCHEDULE_CRON", "0 2 * * *")  # 2 AM daily
@@ -44,20 +41,18 @@ class Settings(BaseSettings):
     # Logging
     LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
     
-    class Config:
-        """Pydantic config."""
+    model_config = {"case_sensitive": True, "env_file": ".env"}
 
-        case_sensitive = True
-        env_file = ".env"
-
-    @validator("GCP_PROJECT_ID")
+    @field_validator("GCP_PROJECT_ID")
+    @classmethod
     def validate_project_id(cls, v: str) -> str:
         """Validate GCP project ID is provided."""
         if not v:
             raise ValueError("GCP_PROJECT_ID must be set")
         return v
 
-    @validator("CONFLUENCE_URL")
+    @field_validator("CONFLUENCE_URL")
+    @classmethod
     def validate_confluence_url(cls, v: str) -> str:
         """Validate Confluence URL is provided."""
         if not v:
