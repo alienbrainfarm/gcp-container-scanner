@@ -3,7 +3,7 @@
 import logging
 import sys
 from typing import List
-from src.scanners import GCPContainerScanner
+from src.scanners import TrivyScanner
 from src.reporters import ConfluenceReporter
 from src.models import ScanResult
 from src.config.settings import settings
@@ -22,7 +22,7 @@ class ContainerVulnerabilityScanner:
 
     def __init__(self):
         """Initialize the scanner application."""
-        self.scanner = GCPContainerScanner()
+        self.scanner = TrivyScanner()
         self.reporter = ConfluenceReporter()
 
     def scan_all_images(self) -> List[ScanResult]:
